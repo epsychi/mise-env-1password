@@ -6,18 +6,18 @@ The `op` CLI must already be installed and authenticated.
 
 ## Install
 
+GitHub:
+
+```toml
+[plugins]
+1password-env = "https://github.com/kujenga/mise-env-1password"
+```
+
 Local path (development):
 
 ```toml
 [plugins]
 1password-env = "file:/path/to/mise-env-1password"
-```
-
-GitHub:
-
-```toml
-[plugins]
-1password-env = "https://github.com/yourname/mise-env-1password"
 ```
 
 ## Usage
