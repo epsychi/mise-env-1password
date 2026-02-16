@@ -22,10 +22,10 @@ mise trust -y -C examples/basic
 mise hook-env -s bash -C examples/basic
 ```
 
-You should see exports for `HELLO`, `NUMBER`, and `ENABLED`.
+You should see exports for `HELLO`, `NUMBER`, `ENABLED`, and `SECRET_PASSWORD`.
 
 To validate secret resolution, add a line like the following to `.env.op` using a real `op://` reference:
 
 ```dotenv
-SECRET=op://Vault/Item/field
+SECRET_PASSWORD=op://Private/Test Item/password
 ```

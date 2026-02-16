@@ -6,11 +6,11 @@ The `op` CLI must already be installed and authenticated.
 
 ## Install
 
-Local path:
+Local path (development):
 
 ```toml
 [plugins]
-1password-env = { path = "/path/to/mise-env-1password" }
+1password-env = "file:/path/to/mise-env-1password"
 ```
 
 GitHub:
@@ -70,6 +70,17 @@ _.1password-env = { env_files = [".env.op", ".env.local.op"] }
 - The plugin uses `op inject --in-file` to resolve env templates and `op read` for explicit vars.
 - Secrets are resolved in memory and not written to disk by the plugin.
 - For better performance, enable `env_cache` in your mise settings.
+
+## Inspiration
+
+This project is inspired by the `mise-env-fnox` plugin and follows the same env hook pattern for a different secrets backend.
+
+- https://github.com/jdx/mise-env-fnox
+
+## References
+
+- https://mise.jdx.dev/plugins.html
+- https://developer.1password.com/docs/cli/reference
 
 ## License
 
