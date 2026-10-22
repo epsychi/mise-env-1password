@@ -44,6 +44,7 @@ _.1password-env = { env_file = ".env.op", tools = true }
 - `op_bin` (string): Path to the `op` binary. Default: `op`.
 - `cache` (bool): Enable cacheable output for `env_cache`. Default: `true`.
 - `require_env_file` (bool): Error when a configured env file is missing. Default: `false`.
+- `ignore_errors` (bool): When `op` fails (Connect or 1Password unreachable, a reference that doesn't resolve), print the error and leave those variables unset instead of failing the whole mise environment. A failed result is never cached. Default: `false`.
 - `tools` (bool): Include mise-managed tools on PATH for this hook. Default: `false`.
 
 ### Example with explicit vars

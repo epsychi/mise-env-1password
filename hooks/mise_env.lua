@@ -92,6 +92,20 @@ local function resolve_var(op_bin, value)
   return value
 end
 
+-- With ignore_errors, a failed op command is reported on stderr and its
+-- variables are left unset instead of failing the whole mise environment.
+local function try(ignore_errors, fn, ...)
+  if not ignore_errors then
+    return true, fn(...)
+  end
+  local ok, result = pcall(fn, ...)
+  if not ok then
+    local message = tostring(result):gsub("%s*stack traceback:.*", "")
+    io.stderr:write("[mise-env-1password] " .. message .. "\n")
+  end
+  return ok, result
+end
+
 local function upsert(env_entries, env_index, key, value)
   local idx = env_index[key]
   if idx then
@@ -106,6 +120,8 @@ end
 function PLUGIN:MiseEnv(ctx)
   local options = ctx.options or {}
   local op_bin = options.op_bin or "op"
+  local ignore_errors = options.ignore_errors == true
+  local failed = false
   local env_entries = {}
   local env_index = {}
   local watch_files = {}
@@ -124,9 +140,13 @@ function PLUGIN:MiseEnv(ctx)
   local require_env_file = options.require_env_file == true
   for _, path in ipairs(env_files) do
     if file.exists(path) then
-      local resolved = resolve_env_file(op_bin, path)
-      for _, kv in ipairs(parse_env(resolved)) do
-        upsert(env_entries, env_index, kv.key, kv.value)
+      local ok, resolved = try(ignore_errors, resolve_env_file, op_bin, path)
+      if ok then
+        for _, kv in ipairs(parse_env(resolved)) do
+          upsert(env_entries, env_index, kv.key, kv.value)
+        end
+      else
+        failed = true
       end
       table.insert(watch_files, path)
     elseif require_env_file then
@@ -136,11 +156,16 @@ function PLUGIN:MiseEnv(ctx)
 
   if type(options.vars) == "table" then
     for key, value in pairs(options.vars) do
-      upsert(env_entries, env_index, key, resolve_var(op_bin, value))
+      local ok, resolved = try(ignore_errors, resolve_var, op_bin, value)
+      if ok then
+        upsert(env_entries, env_index, key, resolved)
+      else
+        failed = true
+      end
     end
   end
 
-  if options.cache == nil or options.cache == true then
+  if (options.cache == nil or options.cache == true) and not failed then
     return {
       cacheable = true,
       watch_files = watch_files,
